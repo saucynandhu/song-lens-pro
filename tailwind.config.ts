@@ -50,7 +50,8 @@ export default {
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
+					foreground: 'hsl(var(--card-foreground))',
+					hover: 'hsl(var(--card-hover))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
@@ -62,6 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			backgroundImage: {
+				'gradient-music': 'var(--gradient-music)',
+				'gradient-card': 'var(--gradient-card)'
+			},
+			boxShadow: {
+				'music-glow': 'var(--music-glow)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
