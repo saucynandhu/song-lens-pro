@@ -25,37 +25,7 @@ Song Lens is a sleek web app that lets you discover songs similar to any YouTube
   - [Last.fm API](https://www.last.fm/api)
 
 ---
-
-## ⚙️ Setup & Installation
-
-1. **Clone the repo:**
-
-```bash
-   git clone https://github.com/saucynandhu/song-lens-pro.git
-   cd song-lens-pro
-```
-
-2. **Create `.env` file in the root folder with your API keys:**
-
-   ```env
-   VITE_YOUTUBE_API_KEY=YOUR_YOUTUBE_API_KEY
-   VITE_LASTFM_API_KEY=YOUR_LASTFM_API_KEY
-   ```
-
-3. **Install dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-4. **Run development server:**
-
-   ```bash
-   npm run dev
-   ```
-
-5. Open `http://localhost:3000` in your browser.
-
+You can use it here : [song lens](https://song-lens-pro.vercel.app/)
 ---
 
 ## 🔑 Getting API Keys
