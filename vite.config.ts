@@ -9,9 +9,6 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    headers: {
-      'Content-Type': 'application/javascript',
-    },
   },
   build: {
     outDir: 'dist',
