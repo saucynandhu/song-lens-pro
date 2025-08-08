@@ -53,67 +53,62 @@ export const MusicDiscovery = () => {
     setIsLoading(true);
     
     try {
-      // Mock API call - In production, this would call your backend
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { extractVideoId, getYouTubeVideoDetails, searchLastFmTrack, getSimilarTracks, searchYouTubeForTrack } = await import('@/lib/api');
       
-      // Mock current song data
-      const mockCurrentSong: Song = {
-        title: "Blinding Lights",
-        artist: "The Weeknd",
-        coverArt: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
-        spotifyUrl: "https://open.spotify.com/track/example",
+      // Extract video ID from YouTube URL
+      const videoId = extractVideoId(youtubeUrl);
+      if (!videoId) {
+        throw new Error('Invalid YouTube URL');
+      }
+
+      // Get YouTube video details
+      const youtubeDetails = await getYouTubeVideoDetails(videoId);
+      
+      // Search for the track on Last.fm
+      const lastFmTrack = await searchLastFmTrack(youtubeDetails.title, youtubeDetails.channelTitle);
+      
+      const currentSong: Song = {
+        title: lastFmTrack?.name || youtubeDetails.title,
+        artist: lastFmTrack?.artist?.name || youtubeDetails.channelTitle,
+        coverArt: youtubeDetails.thumbnail,
         youtubeUrl: youtubeUrl,
-        audioFeatures: {
-          danceability: 0.514,
-          energy: 0.730,
-          valence: 0.334
-        }
       };
 
-      // Mock recommendations
-      const mockRecommendations: Song[] = [
-        {
-          title: "Save Your Tears",
-          artist: "The Weeknd",
-          coverArt: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=300&fit=crop",
-          spotifyUrl: "https://open.spotify.com/track/example1",
-          audioFeatures: { danceability: 0.630, energy: 0.682, valence: 0.279 }
-        },
-        {
-          title: "Midnight City",
-          artist: "M83",
-          coverArt: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
-          spotifyUrl: "https://open.spotify.com/track/example2",
-          audioFeatures: { danceability: 0.486, energy: 0.751, valence: 0.412 }
-        },
-        {
-          title: "Take On Me",
-          artist: "a-ha",
-          coverArt: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=300&h=300&fit=crop",
-          spotifyUrl: "https://open.spotify.com/track/example3",
-          audioFeatures: { danceability: 0.527, energy: 0.842, valence: 0.825 }
-        },
-        {
-          title: "Levitating",
-          artist: "Dua Lipa",
-          coverArt: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=300&fit=crop",
-          spotifyUrl: "https://open.spotify.com/track/example4",
-          audioFeatures: { danceability: 0.702, energy: 0.825, valence: 0.915 }
-        }
-      ];
+      setCurrentSong(currentSong);
 
-      setCurrentSong(mockCurrentSong);
-      setRecommendations(mockRecommendations);
+      // Get similar tracks from Last.fm
+      const similarTracks = await getSimilarTracks(
+        currentSong.title,
+        currentSong.artist
+      );
+
+      // Convert similar tracks to our Song format and search for YouTube URLs
+      const recommendations: Song[] = await Promise.all(
+        similarTracks.slice(0, 8).map(async (track) => {
+          const youtubeUrl = await searchYouTubeForTrack(track.name, track.artist.name);
+          const largeImage = track.image?.find(img => img.size === 'large' || img.size === 'extralarge');
+          
+          return {
+            title: track.name,
+            artist: track.artist.name,
+            coverArt: largeImage?.['#text'] || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
+            youtubeUrl: youtubeUrl || undefined,
+          };
+        })
+      );
+
+      setRecommendations(recommendations);
       
       toast({
         title: "Analysis Complete!",
-        description: `Found ${mockRecommendations.length} similar songs`,
+        description: `Found ${recommendations.length} similar songs`,
       });
 
     } catch (error) {
+      console.error('Analysis error:', error);
       toast({
         title: "Analysis Failed",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -138,8 +133,8 @@ export const MusicDiscovery = () => {
             </h1>
             
             <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Paste any YouTube song URL and discover similar tracks based on audio features, 
-              mood, and musical characteristics.
+              Paste any YouTube song URL and discover similar tracks using Last.fm's music database 
+              and YouTube's vast library of music videos.
             </p>
 
             {/* URL Input */}
@@ -228,7 +223,7 @@ export const MusicDiscovery = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  We extract the song information and analyze audio features like tempo, energy, and mood.
+                  We extract the song information from YouTube and cross-reference with Last.fm's music database.
                 </p>
               </CardContent>
             </Card>
@@ -242,7 +237,7 @@ export const MusicDiscovery = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Our algorithms find songs with similar characteristics and musical DNA.
+                  Last.fm's similarity algorithms find tracks with similar musical characteristics and listener patterns.
                 </p>
               </CardContent>
             </Card>
@@ -256,7 +251,7 @@ export const MusicDiscovery = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Get personalized recommendations with direct links to Spotify and YouTube.
+                  Get personalized recommendations with direct links to YouTube for instant listening.
                 </p>
               </CardContent>
             </Card>
