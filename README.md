@@ -1,4 +1,4 @@
-````markdown
+
 # 🎵 Song Lens - Music Discovery Web App
 
 Song Lens is a sleek web app that lets you discover songs similar to any YouTube music video URL you provide. Powered by the YouTube Data API and Last.fm API, it extracts song metadata from YouTube and finds similar tracks using Last.fm’s rich music database.
@@ -30,10 +30,10 @@ Song Lens is a sleek web app that lets you discover songs similar to any YouTube
 
 1. **Clone the repo:**
 
-   ```bash
+```bash
    git clone https://github.com/saucynandhu/song-lens-pro.git
    cd song-lens-pro
-````
+```
 
 2. **Create `.env` file in the root folder with your API keys:**
 
@@ -110,5 +110,3 @@ MIT License © 2025 nandhu
 
 **Built with ❤️ by nandhu**
 
-```
-```
